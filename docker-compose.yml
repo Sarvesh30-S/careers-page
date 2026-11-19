@@ -1,0 +1,28 @@
+# Local PostgreSQL for development. Prisma (via @prisma/adapter-pg) connects to
+# this container. Start it with `npm run db:up` (or `docker compose up -d`).
+#
+#   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/jobboard?sslmode=disable"
+#
+# Data persists in the named volume `jobboard-pgdata` across restarts.
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: jobboard-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jobboard
+    ports:
+      - "5432:5432"
+    volumes:
+      - jobboard-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d jobboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  jobboard-pgdata:

@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --color-tbm-yellow: #FFD43B;
+  --color-tbm-cream: #FFF9E8;
+  --color-tbm-black: #171717;
+  --color-tbm-grey: #777777;
+}
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #171717;
+  --tbm-yellow: #FFD43B;
+  --tbm-cream: #FFF9E8;
+  --tbm-black: #171717;
+  --tbm-grey: #777777;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 3D Perspective and Transform Utilities */
+.perspective-1200 {
+  perspective: 1200px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Floating animation */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+.animate-float {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+/* Subtle noise background overlay */
+.bg-subtle-mesh {
+  background-image: radial-gradient(at 10% 20%, rgba(255, 212, 59, 0.12) 0px, transparent 50%),
+                    radial-gradient(at 90% 10%, rgba(255, 249, 232, 0.8) 0px, transparent 50%),
+                    radial-gradient(at 50% 80%, rgba(255, 212, 59, 0.08) 0px, transparent 50%);
+}
+
+/* Slide in drawer animation */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Reusable component primitives */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold tracking-tight transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#FFD43B] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer;
+}
+@utility btn-primary {
+  @apply btn bg-[#FFD43B] text-[#171717] hover:bg-[#ffe066] hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md;
+}
+@utility btn-dark {
+  @apply btn bg-[#171717] text-[#FFFFFF] hover:bg-black hover:scale-[1.02] active:scale-[0.98] shadow-sm;
+}
+@utility btn-secondary {
+  @apply btn border border-slate-200 bg-white text-[#171717] hover:bg-[#FFF9E8] hover:border-[#FFD43B];
+}
+@utility btn-ghost {
+  @apply btn text-slate-700 hover:text-black hover:bg-[#FFF9E8];
+}
+@utility input {
+  @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#171717] placeholder:text-slate-400 focus:border-[#FFD43B] focus:outline-none focus:ring-2 focus:ring-[#FFD43B]/40 transition-all;
+}
+@utility card {
+  @apply rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300;
+}
+@utility card-3d {
+  @apply rounded-2xl border border-slate-200/80 bg-white transition-all duration-300 hover:border-[#FFD43B] hover:shadow-xl;
+}
+
+/* Custom Interactive Follower Cursor */
+@media (pointer: fine) {
+  body.custom-cursor-enabled,
+  body.custom-cursor-enabled a,
+  body.custom-cursor-enabled button,
+  body.custom-cursor-enabled [role="button"],
+  body.custom-cursor-enabled .cursor-pointer {
+    cursor: none !important;
+  }
+
+  body.custom-cursor-enabled input,
+  body.custom-cursor-enabled textarea,
+  body.custom-cursor-enabled select {
+    cursor: text !important;
+  }
+}
+
