@@ -10,15 +10,23 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createClient() {
-  const isRemote = process.env.DATABASE_URL?.includes("supabase") || process.env.DATABASE_URL?.includes("sslmode=");
-  const pool = globalForPrisma.pool ?? new pg.Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: isRemote ? { rejectUnauthorized: false } : undefined,
-  });
+  const rawUrl = process.env.DATABASE_URL || "";
+  const isRemote = rawUrl.includes("supabase") || rawUrl.includes("sslmode=");
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.pool = pool;
-  }
+  // Strip sslmode from connection URL so pg-connection-string does not force
+  // verify-full and reject Supabase pooled connection SSL certificates
+  const connectionString = isRemote
+    ? rawUrl.replace(/[?&]sslmode=[^&]+/, "").replace(/\?$/, "")
+    : rawUrl;
+
+  const pool =
+    globalForPrisma.pool ??
+    new pg.Pool({
+      connectionString,
+      ssl: isRemote ? { rejectUnauthorized: false } : undefined,
+    });
+
+  globalForPrisma.pool = pool;
 
   // Prisma 7 connects through a JS driver adapter rather than a bundled engine.
   const adapter = new PrismaPg(pool);
@@ -29,7 +37,4 @@ function createClient() {
 }
 
 export const prisma = globalForPrisma.prisma ?? createClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+globalForPrisma.prisma = prisma;

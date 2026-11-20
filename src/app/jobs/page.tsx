@@ -22,17 +22,22 @@ export default async function JobsPage({
 }) {
   const sp = await searchParams;
 
-  const result = await getJobs({
-    q: sp.q,
-    type: sp.type,
-    category: sp.category,
-    experienceLevel: sp.experienceLevel,
-    location: sp.location,
-    remote: sp.remote === "true",
-    minSalary: sp.minSalary ? Number(sp.minSalary) : undefined,
-    sort: sp.sort as "newest" | "oldest" | "salary_high" | undefined,
-    page: sp.page ? Number(sp.page) : 1,
-  });
+  let result: Awaited<ReturnType<typeof getJobs>> = { jobs: [], total: 0, page: 1, pageSize: 12, totalPages: 1 };
+  try {
+    result = await getJobs({
+      q: sp.q,
+      type: sp.type,
+      category: sp.category,
+      experienceLevel: sp.experienceLevel,
+      location: sp.location,
+      remote: sp.remote === "true",
+      minSalary: sp.minSalary ? Number(sp.minSalary) : undefined,
+      sort: sp.sort as "newest" | "oldest" | "salary_high" | undefined,
+      page: sp.page ? Number(sp.page) : 1,
+    });
+  } catch (err) {
+    console.error("Error retrieving jobs in JobsPage:", err);
+  }
 
   const { jobs, total, page, totalPages } = result;
 
