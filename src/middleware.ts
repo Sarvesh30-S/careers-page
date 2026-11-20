@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ADMIN_COOKIE, verifyAdminSession } from "@/lib/auth";
 
-// Gate every admin page and admin API behind a valid session. The login page
-// and login/logout endpoints are intentionally excluded.
+// Gate internal pages (admin, employer dashboard, post job) and admin APIs
+// behind a valid team session. Public candidates never see these routes.
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get(ADMIN_COOKIE)?.value;
@@ -17,8 +17,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const isAdminPage = pathname.startsWith("/admin") && pathname !== "/admin/login";
-  if (isAdminPage && !authed) {
+  const isProtectedInternalPage =
+    (pathname.startsWith("/admin") && pathname !== "/admin/login") ||
+    pathname.startsWith("/employer") ||
+    pathname.startsWith("/post-job");
+
+  if (isProtectedInternalPage && !authed) {
     const url = req.nextUrl.clone();
     url.pathname = "/admin/login";
     url.searchParams.set("next", pathname);
@@ -27,8 +31,9 @@ export async function middleware(req: NextRequest) {
 
   // Already logged in? Skip the login page.
   if (pathname === "/admin/login" && authed) {
+    const nextPath = req.nextUrl.searchParams.get("next") || "/employer";
     const url = req.nextUrl.clone();
-    url.pathname = "/admin";
+    url.pathname = nextPath;
     url.search = "";
     return NextResponse.redirect(url);
   }
@@ -37,5 +42,10 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/api/admin/:path*",
+    "/employer/:path*",
+    "/post-job/:path*",
+  ],
 };

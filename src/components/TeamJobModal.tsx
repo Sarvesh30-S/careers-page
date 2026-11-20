@@ -68,7 +68,7 @@ export function TeamJobModal({ isOpen, onClose, onJobCreated }: TeamJobModalProp
   const handleVerifyPassword = (e: React.FormEvent) => {
     e.preventDefault();
     // Default team passphrases accepted
-    if (passwordInput === "admin123" || passwordInput === "tbm2026" || passwordInput === "monkey") {
+    if (passwordInput === "Sarvesh@2004" || passwordInput === "admin123" || passwordInput === "tbm2026" || passwordInput === "monkey") {
       setIsAuthenticated(true);
       if (typeof window !== "undefined") {
         sessionStorage.setItem("tbm_team_auth", "true");

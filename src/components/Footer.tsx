@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail } from "lucide-react";
+import { Mail, Lock } from "lucide-react";
 
 export function Footer() {
   return (
@@ -25,7 +25,7 @@ export function Footer() {
             </a>
           </div>
 
-          {/* Right: Navigation, Location & Copyright */}
+          {/* Right: Public Navigation & Discrete Team Portal */}
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500">
             <Link
               href="/jobs"
@@ -33,16 +33,17 @@ export function Footer() {
             >
               Browse Openings
             </Link>
-            <Link
-              href="/employer"
-              className="font-semibold text-slate-700 hover:text-black transition-colors"
-            >
-              Review Submissions
-            </Link>
             <span className="text-slate-300 hidden sm:inline">•</span>
             <span className="text-slate-400">
               © {new Date().getFullYear()} The Bored Monkey
             </span>
+            <Link
+              href="/admin/login"
+              title="Team Portal"
+              className="text-slate-300 hover:text-slate-500 transition-colors ml-1"
+            >
+              <Lock className="h-3 w-3 inline" />
+            </Link>
           </div>
         </div>
       </div>

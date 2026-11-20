@@ -13,18 +13,12 @@ export function Navbar() {
           />
         </Link>
 
-        <nav className="flex items-center gap-1.5 sm:gap-3 text-sm font-semibold">
+        <nav className="flex items-center gap-2 sm:gap-3 text-sm font-semibold">
           <Link
             href="/jobs"
             className="px-3 py-1.5 rounded-lg text-slate-700 hover:text-[#171717] hover:bg-white transition-all"
           >
             Browse Openings
-          </Link>
-          <Link
-            href="/employer"
-            className="hidden sm:inline-flex px-3 py-1.5 rounded-lg text-slate-700 hover:text-[#171717] hover:bg-white transition-all"
-          >
-            Review Submissions
           </Link>
           <SavedCount />
         </nav>
