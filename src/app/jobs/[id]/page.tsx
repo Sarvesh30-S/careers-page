@@ -31,8 +31,50 @@ export default async function JobDetailPage({ params }: Params) {
 
   const salary = formatSalary(job.salaryMin, job.salaryMax, job.currency);
 
+  const jsonLd = {
+    "@context": "https://schema.org/",
+    "@type": "JobPosting",
+    title: job.title,
+    description: job.description,
+    datePosted: job.postedAt.toISOString(),
+    employmentType: job.type,
+    hiringOrganization: {
+      "@type": "Organization",
+      name: "The Bored Monkey",
+      sameAs: "https://theboredmonkey.com",
+      logo: "https://careers-page-silk-beta.vercel.app/images/tbm-logo.png",
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Mumbai",
+        addressRegion: "Maharashtra",
+        addressCountry: "IN",
+      },
+    },
+    ...(job.salaryMin
+      ? {
+          baseSalary: {
+            "@type": "MonetaryAmount",
+            currency: job.currency || "INR",
+            value: {
+              "@type": "QuantitativeValue",
+              minValue: job.salaryMin,
+              maxValue: job.salaryMax || job.salaryMin,
+              unitText: "YEAR",
+            },
+          },
+        }
+      : {}),
+  };
+
   return (
     <div className="min-h-screen bg-slate-50/50 py-10 sm:py-14">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Back Link */}
         <Link
