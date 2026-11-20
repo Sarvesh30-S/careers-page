@@ -108,6 +108,24 @@ export function CleanCareersBoard({ initialJobs }: CleanCareersBoardProps) {
     };
   }, []);
 
+  // Auto-open application drawer if candidate lands with ?job=<id> or ?apply=<id>
+  useEffect(() => {
+    if (typeof window === "undefined" || !jobs || jobs.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get("job") || params.get("apply");
+    if (!target) return;
+
+    const matched = jobs.find(
+      (j) =>
+        j.id === target ||
+        j.title.toLowerCase().replace(/\s+/g, "-") === target.toLowerCase() ||
+        j.title.toLowerCase() === target.toLowerCase()
+    );
+    if (matched) {
+      setActiveJobForModal(matched);
+    }
+  }, [jobs]);
+
   const emptyState = EMPTY_STATE_VARIATIONS[variationIndex];
 
   // Scroll & Cursor lerp state

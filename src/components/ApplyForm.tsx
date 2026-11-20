@@ -14,7 +14,7 @@ export function ApplyForm({
   jobTitle: string;
 }) {
   const searchParams = useSearchParams();
-  const source = searchParams?.get("source") || "direct";
+  const source = searchParams?.get("source") || searchParams?.get("utm_source") || "direct";
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
