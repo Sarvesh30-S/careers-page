@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Lock } from "lucide-react";
+import { Mail } from "lucide-react";
 
 export function Footer() {
   return (
@@ -37,13 +37,6 @@ export function Footer() {
             <span className="text-slate-400">
               © {new Date().getFullYear()} The Bored Monkey
             </span>
-            <Link
-              href="/admin/login"
-              title="Team Portal"
-              className="text-slate-300 hover:text-slate-500 transition-colors ml-1"
-            >
-              <Lock className="h-3 w-3 inline" />
-            </Link>
           </div>
         </div>
       </div>

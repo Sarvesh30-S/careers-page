@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import type { Job } from "@/generated/prisma";
-import { TeamJobModal } from "@/components/TeamJobModal";
 import { ApplyForm } from "@/components/ApplyForm";
 import { formatSalary } from "@/lib/format";
 import { jobTypeLabel } from "@/lib/constants";
@@ -15,8 +14,6 @@ import {
   ArrowLeft,
   X,
   CheckCircle2,
-  Lock,
-  Plus,
   Mail,
 } from "lucide-react";
 
@@ -66,33 +63,9 @@ export function CleanCareersBoard({ initialJobs }: CleanCareersBoardProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeJobForModal, setActiveJobForModal] = useState<Job | null>(null);
-  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
-  const [isTeamUser, setIsTeamUser] = useState(false);
   const [variationIndex, setVariationIndex] = useState(0);
 
   useEffect(() => {
-    // Check if user has team access via URL query (?team=true or ?admin=true) or active session
-    const params = new URLSearchParams(window.location.search);
-    const hasTeamParam = params.get("team") === "true" || params.get("admin") === "true";
-    const hasSession = sessionStorage.getItem("tbm_team_access") === "true";
-
-    if (hasTeamParam || hasSession) {
-      setIsTeamUser(true);
-      sessionStorage.setItem("tbm_team_access", "true");
-      sessionStorage.setItem("tbm_team_auth", "true");
-    }
-
-    // Secret team keyboard shortcut: Press Shift + T to open Team Job Creator!
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.shiftKey && (e.key === "T" || e.key === "t")) {
-        setIsTeamUser(true);
-        sessionStorage.setItem("tbm_team_access", "true");
-        sessionStorage.setItem("tbm_team_auth", "true");
-        setIsTeamModalOpen(true);
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-
     // Guarantees a different witty line every single time the page refreshes
     const prev = parseInt(sessionStorage.getItem("tbm_empty_idx") ?? "-1", 10);
     const next =
@@ -102,10 +75,6 @@ export function CleanCareersBoard({ initialJobs }: CleanCareersBoardProps) {
         : Math.floor(Math.random() * EMPTY_STATE_VARIATIONS.length);
     sessionStorage.setItem("tbm_empty_idx", next.toString());
     setVariationIndex(next);
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
   }, []);
 
   // Auto-open application drawer if candidate lands with ?job=<id> or ?apply=<id>
@@ -207,10 +176,6 @@ export function CleanCareersBoard({ initialJobs }: CleanCareersBoardProps) {
     });
   }, [jobs, searchTerm, selectedCategory]);
 
-  const handleJobCreated = (newJob: Job) => {
-    setJobs((prev) => [newJob, ...prev]);
-  };
-
   // Slogan split calculations:
   // "WHERE" & "TALENT" slide left out of the frame
   // "MEETS" & "OPPORTUNITY" slide right out of the frame
@@ -237,21 +202,7 @@ export function CleanCareersBoard({ initialJobs }: CleanCareersBoardProps) {
     >
       {/* STICKY PINNED STAGE */}
       <div className="sticky top-20 h-[calc(100vh-5rem)] w-full overflow-hidden flex flex-col justify-between px-4 sm:px-6 lg:px-8 select-none">
-        {/* Top discrete Team Access option: Only visible for internal team users */}
-        {isTeamUser ? (
-          <div className="w-full max-w-5xl mx-auto pt-4 flex items-center justify-end z-20">
-            <button
-              type="button"
-              onClick={() => setIsTeamModalOpen(true)}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-[#171717] bg-white hover:bg-[#FFF9E8] hover:border-[#FFD43B] px-3.5 py-1.5 rounded-full border border-slate-200 transition-all cursor-pointer shadow-2xs"
-            >
-              <Lock className="h-3 w-3 text-amber-600" />
-              <span>Team Access (Create Job)</span>
-            </button>
-          </div>
-        ) : (
-          <div className="h-8" />
-        )}
+        <div className="h-8" />
 
         {/* CENTER STAGE: Slogans part left/right, and Info rises in their place without any card box */}
         <div className="relative w-full max-w-5xl mx-auto my-auto flex items-center justify-center min-h-[65vh]">
@@ -356,20 +307,6 @@ export function CleanCareersBoard({ initialJobs }: CleanCareersBoardProps) {
                   >
                     <span>{emptyState.cta}</span>
                   </a>
-
-                  {isTeamUser && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        sessionStorage.setItem("tbm_team_auth", "true");
-                        setIsTeamModalOpen(true);
-                      }}
-                      className="btn-secondary text-sm px-5 py-3.5 flex items-center gap-2 hover:bg-[#FFF9E8] cursor-pointer font-bold"
-                    >
-                      <Plus className="h-4 w-4 text-amber-600" />
-                      <span>Team: Create an Opening</span>
-                    </button>
-                  )}
                 </div>
               </div>
             ) : (
@@ -403,20 +340,6 @@ export function CleanCareersBoard({ initialJobs }: CleanCareersBoardProps) {
                         {cat}
                       </button>
                     ))}
-
-                    {isTeamUser && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          sessionStorage.setItem("tbm_team_auth", "true");
-                          setIsTeamModalOpen(true);
-                        }}
-                        className="btn-primary text-xs px-3 py-1 flex items-center gap-1 font-bold shadow-xs cursor-pointer ml-1"
-                      >
-                        <Plus className="h-3 w-3" />
-                        <span>Post Job</span>
-                      </button>
-                    )}
                   </div>
                 </div>
 
@@ -600,15 +523,6 @@ export function CleanCareersBoard({ initialJobs }: CleanCareersBoardProps) {
           </div>
         </div>
       )}
-
-      {/* ======================================================== */}
-      {/* TEAM-ONLY JOB POSTING MODAL                               */}
-      {/* ======================================================== */}
-      <TeamJobModal
-        isOpen={isTeamModalOpen}
-        onClose={() => setIsTeamModalOpen(false)}
-        onJobCreated={handleJobCreated}
-      />
     </div>
   );
 }
